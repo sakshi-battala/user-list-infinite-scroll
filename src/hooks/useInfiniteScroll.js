@@ -1,26 +1,24 @@
 import { useEffect, useRef } from "react";
 
-export function useInfiniteScroll(onIntersect, enabled) {
+export function useInfiniteScroll(onReachBottom, canLoadMore) {
   const bottomRef = useRef(null);
-  const callbackRef = useRef(onIntersect);
-
-  // always keep the latest function
-  useEffect(() => {
-    callbackRef.current = onIntersect;
-  });
 
   useEffect(() => {
-    const element = bottomRef.current;
-    if (!enabled || !element) return;
+    const bottomDiv = bottomRef.current;
 
+    // not allowed to load or no div on the page => do nothing
+    if (!canLoadMore || !bottomDiv) return;
+
+    // the observer calls this when the bottom div is visible
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) callbackRef.current();
+      if (entries[0].isIntersecting) onReachBottom();
     });
 
-    observer.observe(element);
+    observer.observe(bottomDiv);
 
-    return () => observer.disconnect(); // cleanup
-  }, [enabled]);
+    // stop watching when the effect runs again
+    return () => observer.disconnect();
+  }, [canLoadMore, onReachBottom]);
 
   return bottomRef;
 }

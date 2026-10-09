@@ -26,10 +26,9 @@ function UserList() {
   const [bloodGroup, setBloodGroup] = useState("all");
   const [sortBy, setSortBy] = useState("none");
 
-  const bottomRef = useInfiniteScroll(
-    loadMore,
-    hasMore && !loadingMore && !loadMoreError,
-  );
+  const canLoadMore = hasMore && !loadingMore && !loadMoreError;
+
+  const bottomRef = useInfiniteScroll(loadMore, canLoadMore);
 
   if (loading) return <p className="loader">Loading...</p>;
 
